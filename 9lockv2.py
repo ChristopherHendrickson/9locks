@@ -294,6 +294,8 @@ def playCard(player):
         selected_hand = 1
         psuedo_selected_hand = psuedohVis[player]
         print("You only have table cards left, playing from table hand")
+        check = True
+        sleep(2)
       else:
         selected_hand = input("Which hand are you playing from? (1 = table hand, 2 = hidden hand): ")
         if not selected_hand.isnumeric():
@@ -306,15 +308,17 @@ def playCard(player):
           continue
         else:
           check = True
-          selected_hand_index = int(selected_hand)
-          if selected_hand_index == 1: #assign temporary hand lists to existing visible hands
-            hand_str = "table hand"
-            selected_hand = hVis[player] #Ive changed what this variable is used for which is bad but ohwell
-            psuedo_selected_hand = psuedohVis[player]
-          else: #Assign temporary hand lists to existing invisible hands
-            hand_str = "hidden hand"
-            selected_hand = hInvis[player]
-            psuedo_selected_hand = psuedohInvis[player]
+
+      selected_hand_index = int(selected_hand)
+
+      if selected_hand_index == 1: #assign temporary hand lists to existing visible hands
+        hand_str = "table hand"
+        selected_hand = hVis[player] #Ive changed what this variable is used for which is bad but ohwell
+        psuedo_selected_hand = psuedohVis[player]
+      else: #Assign temporary hand lists to existing invisible hands
+        hand_str = "hidden hand"
+        selected_hand = hInvis[player]
+        psuedo_selected_hand = psuedohInvis[player]
 
     #Selecting the card to play
 
@@ -327,7 +331,7 @@ def playCard(player):
         continue
       elif int(selected_card) > len(psuedo_selected_hand) or int(selected_card) <1:
         gameScreen_print(player)
-        print("You dont have that many cards")
+        print("You don't have that many cards")
         continue
       else:
         selected_card = int(selected_card)
@@ -369,7 +373,8 @@ def playCard(player):
               #Check if the new top card is a 9 (9 was just played), if so use key
               if gamePiles[selected_pile-1][1] == 9 or gamePiles[selected_pile-1][1] == 109:
                 nine_key()
-                    
+
+            #Error messages for invalid inputs        
             else:
               gameScreen_print(player)
               print("That card can't be played on that pile")
@@ -379,7 +384,7 @@ def playCard(player):
       
         else:
           gameScreen_print(player)
-          print("There arent that many game piles")
+          print("There aren't that many game piles, select pile number 1-9")
       else:
         gameScreen_print(player)
         print("Please enter a number")
@@ -399,7 +404,8 @@ def playCard(player):
 
 def gameScreen_print(player):
 
-  #Hand index negative difference of the player oppisite the player whos turn it is
+  #Find a constant value to offset the index of the player whos turn it is to the index of the player that should be displayed accross the table.
+  #This is to account for the fact that games can have a differing number of players and the postition each hand is prtined depends on this number of players
   horiz_player_index = floor(numPlayers/2)
   
 
@@ -435,11 +441,11 @@ def gameScreen_print(player):
   #Build game pile displays
 
   for i in range(9):
-    if gamePiles[i][3] == 0:
+    if gamePiles[i][3] == 0: #Print XX if the game pile has not been revealed
       
       gamescreen[i] = ' XX '
     elif gamePiles[i][3] == 2:
-      gamescreen[i] = "("+gamePiles[i][0]+")"
+      gamescreen[i] = "("+gamePiles[i][0]+")" #Print the pile in brackets to represent that it is locked
     else:
       gamescreen[i] = " "+gamePiles[i][0]+" "
 
@@ -475,7 +481,7 @@ def gameScreen_print(player):
 #_________________________________________________________________________________________________
 
 
-def nine_key():
+def nine_key(): #Function to call when a 9 is played or flipped to allow a player to lok or unlock piles
   activating_nine=[] 
   while not activating_nine == 'y' and not activating_nine == 'n':
     gameScreen_print(player)
@@ -512,14 +518,12 @@ def nine_key():
 #_________________________________________________________________________________________________
 
 
-#END OF DEFS --- GAME SCRIPT    
-
 
 
     
 winCon = False
 lock_condition = 5 #Number of cards that can be played on a pile before it is locked
-winner_string = "None"
+winner_string = "None" #Initiate winner_string incase game is ended with 'end' input on player move 
 print("9 LOCKS \n")
 
 numPlayers = playerCount()
@@ -566,9 +570,10 @@ while not winCon:
       if playerMove == str(1):
         hVis, psuedohVis, hInvis, psuedohInvis, gamePiles, winCon = playCard(player)
         winner = player+1
+        winner_string=str(winner)
       if finishedPlayersList.count(True) == len(finishedPlayersList):
         winCon = True
-        winning_score = min(finishedPlayersScore) #Find what the lowest number of visible hands is, this is the winning hand
+        winning_score = min(finishedPlayersScore) #Find what the lowest number of cards in visible hands is, this is the winning hand(s)
         winner_list = [] #Create an empty list to store the players that have the wining hand length
         for player in range(numPlayers):
           if finishedPlayersScore[player] == winning_score:
@@ -592,3 +597,4 @@ system('cls')
 
 
   
+#Save check
